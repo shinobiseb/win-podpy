@@ -13,7 +13,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 FILES = ROOT / "src" / "files"
 VIDEO = FILES / "pov_seb.mp4"
-VIDEO2 = FILES / "pov_gus.mp4"
+VIDEO2 = FILES / "pov_gus_1.mp4"
 AUDIO1 = FILES / "pod1_seb.mp3"
 AUDIO2 = FILES / "pod1_gus.mp3"
 OUTPUT = ROOT / "Synced_video.mp4"
