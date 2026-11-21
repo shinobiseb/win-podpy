@@ -1,0 +1,1 @@
+The Resolve FCPXML export writes two persistent processed audio files in a companion `<timeline-name>_media/` folder beside the XML. Keep that folder with the `.fcpxml` when moving or importing the timeline; camera-source audio is disabled in the exported timeline, and the processed tracks are aligned using their measured sync offsets.

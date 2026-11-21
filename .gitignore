@@ -6,6 +6,7 @@ __pycache__/
 
 # Local media files (may contain private recordings)
 src/files/
+C:\Users\nerfn\Documents\development\win-podpy\podpy_timeline_media
 *.mp3
 *.mp4
 *.wav
