@@ -15,6 +15,8 @@ Synced_video.mp4
 test_synced_merged_cuts.json
 output/
 build/
+./podpy_timeline_media
+podpy_timeline_media
 
 # OS/editor files
 .DS_Store
