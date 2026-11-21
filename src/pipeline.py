@@ -86,16 +86,16 @@ def process_project(
             xml_path = Path(resolve_xml).expanduser().resolve()
             audio_assets_dir = xml_path.parent / f"{xml_path.stem}_media"
             audio_assets_dir.mkdir(parents=True, exist_ok=True)
-            processed1_path = audio_assets_dir / "processed_audio1.wav"
-            processed2_path = audio_assets_dir / "processed_audio2.wav"
+            processed1_path = audio_assets_dir / "processed_audio1.flac"
+            processed2_path = audio_assets_dir / "processed_audio2.flac"
         else:
-            processed1_path = temp_dir / "audio1_processed.wav"
-            processed2_path = temp_dir / "audio2_processed.wav"
+            processed1_path = temp_dir / "audio1_processed.flac"
+            processed2_path = temp_dir / "audio2_processed.flac"
 
         if video_only_mode:
             report("Preparing embedded audio for output...")
-            embedded_audio1 = temp_dir / "video1_embedded_audio.wav"
-            embedded_audio2 = temp_dir / "video2_embedded_audio.wav"
+            embedded_audio1 = temp_dir / "video1_embedded_audio.flac"
+            embedded_audio2 = temp_dir / "video2_embedded_audio.flac"
             try:
                 extract_audio_track(video1, embedded_audio1)
                 extract_audio_track(video2, embedded_audio2)

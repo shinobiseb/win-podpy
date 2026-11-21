@@ -47,21 +47,20 @@ def probe_video_size(path):
     return width, height
 
 
-def extract_analysis_wav(source, output):
+def extract_activity_wav(source, output):
+    """Extract full-length mono audio for camera activity detection."""
     run([
         "ffmpeg", "-y", "-v", "error",
         "-i", str(source),
         "-map", "0:a:0",
-        "-t", str(ANALYSIS_SECONDS),
         "-ac", "1",
         "-ar", str(ANALYSIS_SAMPLE_RATE),
         "-c:a", "pcm_s16le",
         str(output),
     ])
 
-
 def extract_audio_track(source, output):
-    """Extract a full-length stereo audio track for processing and rendering."""
+    """Extract a full-length stereo audio track as lossless FLAC."""
     run([
         "ffmpeg", "-y", "-v", "error",
         "-i", str(source),
@@ -69,9 +68,11 @@ def extract_audio_track(source, output):
         "-vn",
         "-ac", "2",
         "-ar", str(OUTPUT_AUDIO_RATE),
-        "-c:a", "pcm_s24le",
+        "-c:a", "flac",
+        "-compression_level", "5",
         str(output),
     ])
+
 
 
 def read_pcm16_wav(path):

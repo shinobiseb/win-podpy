@@ -70,14 +70,16 @@ def process_audio(path, output_path):
         "-i", str(path),
         "-map", "0:a:0",
         "-af", filters,
-        "-c:a", "pcm_s24le",
+        "-c:a", "flac",
+        "-compression_level", "5",
         str(output_path),
     ])
 
 
 def prepare_audio(path, processed_path):
-    """Use a track as-is if loudness/peak targets pass; otherwise process it."""
+    """Prepare audio as FLAC, processing only when loudness targets fail."""
     integrated_lufs, true_peak = measure_loudness(path)
+
     print(
         f"{path}: {integrated_lufs:.1f} LUFS integrated, "
         f"{true_peak:.1f} dBTP true peak"
@@ -90,11 +92,26 @@ def prepare_audio(path, processed_path):
     peak_ok = math.isfinite(true_peak) and true_peak <= TARGET_TRUE_PEAK
 
     if loudness_ok and peak_ok:
-        print(f"Using {path} as-is; it meets the loudness check.")
-        return str(path)
+        print(
+            f"Audio meets loudness targets. "
+            f"Converting to lossless FLAC: {processed_path}"
+        )
+
+        run([
+            "ffmpeg", "-y", "-v", "error",
+            "-i", str(path),
+            "-map", "0:a:0",
+            "-vn",
+            "-c:a", "flac",
+            "-compression_level", "5",
+            str(processed_path),
+        ])
+
+        return str(processed_path)
 
     print(f"Processing {path}...")
     process_audio(path, processed_path)
+
     return str(processed_path)
 
 

@@ -1,21 +1,15 @@
 {
-  "video_duration_seconds": 90.19,
+  "video_duration_seconds": 4732.245,
   "envelope_rate": 100,
   "camera_sources": {
-    "VIDEO1": "src/files/pov_seb.mp4",
-    "VIDEO2": "src/files/pov_gus.mp4"
+    "VIDEO1": "C:/Users/nerfn/Downloads/EP3/EP3/EP3_Seb_POV.mp4",
+    "VIDEO2": "C:/Users/nerfn/Downloads/EP3/EP3/EP3_Gus_POV.mp4"
   },
   "cuts": [
     {
       "start_seconds": 0.0,
-      "end_seconds": 13.39,
-      "duration_seconds": 13.39,
-      "camera": "VIDEO1"
-    },
-    {
-      "start_seconds": 13.39,
       "end_seconds": 14.7,
-      "duration_seconds": 1.31,
+      "duration_seconds": 14.7,
       "camera": "VIDEO2"
     },
     {
@@ -86,8 +80,8 @@
     },
     {
       "start_seconds": 49.84,
-      "end_seconds": 90.19,
-      "duration_seconds": 40.35,
+      "end_seconds": 4732.245,
+      "duration_seconds": 4682.405,
       "camera": "VIDEO2"
     }
   ]
