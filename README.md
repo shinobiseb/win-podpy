@@ -1,65 +1,100 @@
-# PodPy
+# podpy — Audio-Driven Multicam Switcher
 
-A local multicamera editing tool that creates activity-driven cuts from two videos. It can analyze separate audio tracks or use the audio embedded in each video.
+A local Python tool that uses audio activity to switch between two camera videos and renders an MP4 with FFmpeg. Media is processed locally and is not uploaded.
 
-## Desktop app
+## Windows quick start
 
-Launch the interface with:
+### 1. Install Python and FFmpeg
 
-```bash
-python src/gui.py
+- Install Python 3 from [python.org](https://www.python.org/downloads/windows/). Enable the Python launcher (`py`) in the installer.
+- Install FFmpeg with `ffmpeg` and `ffprobe`, and add them to `PATH`. With `winget`, you can try:
+
+  ```powershell
+  winget install --id Gyan.FFmpeg.Shared --exact
+  ```
+
+  Open a new terminal after installation and verify both commands work:
+
+  ```powershell
+  ffmpeg -version
+  ffprobe -version
+  ```
+
+### 2. Add your input media
+
+The media files are not included in this repository. In the project folder, create `src\files` and put these files there:
+
+| File | Purpose |
+| --- | --- |
+| `pov_seb.mp4` | Camera 1 video (must contain its reference audio) |
+| `pov_gus.mp4` | Camera 2 video (must contain audio used for synchronization) |
+| `pod1_seb.mp3` | Camera 1 audio track |
+| `pod1_gus.mp3` | Camera 2 audio track |
+
+PowerShell command:
+
+```powershell
+New-Item -ItemType Directory -Force src\files
 ```
 
-Choose the audio source, then select an output workflow:
+You can change the expected filenames in `src/main.py`. Do not commit private media files; media extensions in `src/files` are ignored by Git.
 
-- **Render MP4** — analyze, cut, and encode the finished video.
-- **Create Resolve XML only** — analyze the audio and write a Final Cut Pro XML timeline that references both original camera files; no MP4 render.
-- **Both MP4 and Resolve XML** — produce both outputs.
+### 3. Set up Python
 
-The XML contains both camera assets and the cut segments in sequence. Import it in DaVinci Resolve using **File → Import Timeline → Import AAF, EDL, XML…** and relink the original video files if prompted. Save the imported timeline as a `.drp` project in Resolve.
+Double-click `setup_windows.bat`, or run it from PowerShell in the project directory:
 
-PodPy defaults to whichever input video is longer during detected silence; equal-length clips default to Video 1. Camera 1 remains the synchronization reference and defines the output timeline duration.
+```powershell
+.\setup_windows.bat
+```
 
-## Requirements
+The script creates a Windows-native `.venv` and installs the project dependencies into it. If `.venv` already exists from Linux, WSL, or macOS, delete it first in PowerShell:
 
-- Python 3.9+
-- FFmpeg and ffprobe installed and available on your PATH
-- Dependencies installed in a virtual environment
+```powershell
+Remove-Item -Recurse -Force .venv
+.\setup_windows.bat
+```
+
+The app does not require virtual-environment activation, so PowerShell execution policy is not an issue.
+
+### 4. Run podpy
+
+Double-click `run_windows.bat`, or run:
+
+```powershell
+.\run_windows.bat
+```
+
+The rendered video (`Synced_video.mp4`) and camera-cut JSON (`test_synced_merged_cuts.json`) are saved in the project directory. Rendering can take a while for long videos.
+
+### Use the commands directly
+
+Both commands explicitly use the project environment, rather than whichever `python` happens to be first on `PATH` (for example MSYS2 Python):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe .\src\main.py
+```
+
+The script resolves media and output paths relative to its own location, so it can also be started from a different working directory.
+
+## macOS and Linux
+
+Install Python 3 and FFmpeg (including ffprobe), then run these commands from the project directory:
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+python src/main.py
 ```
 
-## Command-line mode
+Create a separate virtual environment on each operating system; do not share `.venv` across Windows, WSL, macOS, or Linux.
 
-Render an MP4 with configured defaults:
+## What the program does
 
-```bash
-python src/main.py --videos-only --output-mode render --output Synced_video.mp4
-```
+1. Uses FFmpeg/ffprobe to inspect inputs and extract temporary analysis audio.
+2. Estimates audio synchronization against the first video's embedded audio.
+3. Detects audio activity and creates a camera switching timeline.
+4. Renders a combined video and audio output.
 
-Create only a Resolve XML (no MP4 render):
-
-```bash
-python src/main.py --videos-only --output-mode resolve \
-  --video1 path/to/camera1.mp4 --video2 path/to/camera2.mp4 \
-  --resolve-xml podpy_timeline.fcpxml
-```
-
-Create both outputs:
-
-```bash
-python src/main.py --videos-only --output-mode both \
-  --video1 path/to/camera1.mp4 --video2 path/to/camera2.mp4 \
-  --output Synced_video.mp4 --resolve-xml podpy_timeline.fcpxml
-```
-
-Use `--audio1` and `--audio2` instead of `--videos-only` to provide separate audio. Both videos need audio with at least 30 seconds of shared material for reliable sync estimation.
-
-## Notes
-
-The timeline XML uses both original camera files as source assets and references the cut segments in a single project timeline. This preserves the two-camera nature of the edit better than an EDL and is the appropriate import to use in Resolve for a native project workflow.
-
-FFmpeg/ffprobe are still used for audio extraction and analysis in timeline-only mode, but no rendered video file is encoded.
+The project currently expects the four fixed filenames listed above and requires at least 30 seconds of overlapping audio for sync analysis. If `ffmpeg` or `ffprobe` is missing, the program prints a setup hint.
